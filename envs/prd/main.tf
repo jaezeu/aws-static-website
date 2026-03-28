@@ -11,6 +11,7 @@ module "static_web_stack" {
   acm_certificate_arn = module.acm.acm_certificate_arn
   aliases             = ["${local.domain_prefix}-${local.env}.${local.zone_name}"]
   web_acl_id          = module.waf.web_acl_arn
+  prefix              = local.domain_prefix
 }
 
 module "waf" {
@@ -26,32 +27,33 @@ module "waf" {
 module "acm" {
   #checkov:skip=CKV_TF_1:Ensure Terraform module sources use a commit hash
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.0"
+  version = "~> 6.3"
 
   providers = {
     aws = aws.us-east-1
   }
 
   domain_name       = "${local.domain_prefix}-${local.env}.${local.zone_name}"
-  zone_id           = data.aws_route53_zone.prod.zone_id
+  zone_id           = data.aws_route53_zone.nonprod.zone_id
   validation_method = "DNS"
 }
 
-module "records" {
+module "zone" {
   #checkov:skip=CKV_TF_1:Ensure Terraform module sources use a commit hash
-  source  = "terraform-aws-modules/route53/aws//modules/records"
-  version = "~> 2.0"
+  source  = "terraform-aws-modules/route53/aws"
+  version = "~> 6.4"
 
-  zone_name = local.zone_name
+  name        = local.zone_name
+  create_zone = false
 
-  records = [
-    {
+  records = {
+    cloudfront_ipv4 = {
       name = "${local.domain_prefix}-${local.env}"
       type = "A"
       alias = {
         name    = "${module.static_web_stack.cloudfront_domain}"
         zone_id = "Z2FDTNDATAQYW2"
       }
-    },
-  ]
+    }
+  }
 }

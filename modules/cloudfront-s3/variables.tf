@@ -18,3 +18,8 @@ variable "web_acl_id" {
   type        = string
   description = "Web ACL arn of WAF"
 }
+
+variable "prefix" {
+  type        = string
+  description = "Prefix for resource names"
+}

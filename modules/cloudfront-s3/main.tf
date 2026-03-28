@@ -6,7 +6,7 @@ resource "aws_s3_bucket" "static_web" {
   #checkov:skip=CKV2_AWS_6:Ensure that S3 bucket has a Public Access block
   #checkov:skip=CKV_AWS_144:Ensure that S3 bucket has cross-region replication enabled
   #checkov:skip=CKV_AWS_21:Ensure all data stored in the S3 bucket have versioning enabled
-  bucket        = "${var.env}-jaz-spa-cf-bkt"
+  bucket_prefix = "${var.prefix}-${var.env}-bkt"
   force_destroy = true
 }
 
@@ -59,7 +59,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 }
 
 resource "aws_cloudfront_origin_access_control" "oac" {
-  name                              = "${aws_s3_bucket.static_web.id}-oac-${var.env}"
+  name                              = "${var.prefix}-${var.env}-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"

@@ -147,9 +147,3 @@ Current naming pattern:
 
 - Re-run `aws s3 sync`.
 - Create a CloudFront invalidation for updated paths.
-
-## Future Improvements
-
-- Add CI/CD pipeline for plan/apply and content deployment.
-- Add CloudFront/WAF logging destinations.
-- Add automated cache-control headers and immutable asset strategy.
